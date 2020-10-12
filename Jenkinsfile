@@ -3,11 +3,6 @@ def CommitHash
 
 pipeline {
     
-    environment {
-        registry = '123160087/vue-app'
-        registryCredential = 'docker-hub'
-    }
-
     agent any
 
     parameters {
@@ -57,9 +52,7 @@ pipeline {
 
             steps {
                 script {
-                    docker.withRegistry( '', registryCredential ) {
-                        builderDocker.push("${env.GIT_BRANCH}")
-                    }     
+                        builderDocker.push("${env.GIT_BRANCH}")  
                 }
             }
         }
