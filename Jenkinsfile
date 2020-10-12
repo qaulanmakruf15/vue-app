@@ -71,7 +71,7 @@ pipeline {
                             verbose: false,
                             transfers: [
                                 sshTransfer(
-                                    execCommand: 'docker pull 123160087/vue-app:main; docker kill vue-app; docker run -d --rm --name 123160087/vue-app:main -p 8080:80 123160087/vue-app:main',
+                                    execCommand: 'docker pull 123160087/vue-app:main; docker kill 123160087/vue-app; docker run -d --rm --name 123160087/vue-app:main -p 8080:80 123160087/vue-app:main',
                                     execTimeout: 120000,
                                 )
                             ]
