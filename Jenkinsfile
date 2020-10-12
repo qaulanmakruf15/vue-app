@@ -64,7 +64,7 @@ pipeline {
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: "docker pull qaulanmakruf15/vue-env:${env.GIT_BRANCH}; docker kill vue-env; docker run -d --rm --name vue-env -p 80:80 qaulanmakruf/vue-env:${env.GIT_BRANCH}",
+                                        execCommand: "docker pull 123160087/vue-env:${env.GIT_BRANCH}; docker kill vue-env; docker run -d --rm --name vue-env -p 80:80 123160087/vue-env:${env.GIT_BRANCH}",
                                         execTimeout: 120000,
                                     )
                                 ]
