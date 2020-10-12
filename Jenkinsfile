@@ -2,66 +2,57 @@ def builderDocker
 def CommitHash
 
 pipeline {
-
     agent any
-
     parameters {
-        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value fro testing')
+        booleanParam(name: 'RunTest', defaultValue: true, description: 'Toggle this value for testing')
         choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
     }
-
     stages {
-
-        stage('Build Project') {
+        stage('Build project') {
             steps {
-                nodejs("node12") {
+                nodejs('nodejs12') {
                     sh 'yarn install'
                 }
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
                     CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    builderDocker = docker.build("qaulanmakruf15/vue-app:${CommitHash}")
+                    buildDocker = docker.build("qaulanmakruf15/vue-app:${CommitHash}")
                 }
             }
         }
-
         stage('Run Testing') {
             when {
                 expression {
-                    params.RUNTEST
+                    params.RunTest
                 }
             }
             steps {
                 script {
-                    builderDocker.inside {
+                    buildDocker.inside {
                         sh 'echo passed'
                     }
                 }
             }
         }
-
         stage('Push Image') {
             when {
                 expression {
-                    params.RUNTEST
+                    params.RunTest
                 }
             }
-
             steps {
                 script {
-                    builderDocker.push("${env.GIT_BRANCH}")
+                    buildDocker.push("${env.GIT_BRANCH}")
                 }
             }
         }
-
         stage('Deploy') {
             when {
                 expression {
-                    params.CICD == 'CICD'
+                    BRANCH_NAME == 'main'
                 }
             }
             steps {
@@ -69,11 +60,11 @@ pipeline {
                     sshPublisher(
                         publishers: [
                             sshPublisherDesc(
-                                configName: 'Development',
+                                configName: 'development',
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker pull qaulanmakruf15/vue-app:main; docker kill vue-app; docker run -d --rm --name vue-app -p 8080:80 qaulanmakruf15/vue-app:main',
+                                        execCommand: "docker pull qaulanmakruf15/vue-env:${env.GIT_BRANCH}; docker kill vue-env; docker run -d --rm --name vue-env -p 80:80 qaulanmakruf/vue-env:${env.GIT_BRANCH}",
                                         execTimeout: 120000,
                                     )
                                 ]
