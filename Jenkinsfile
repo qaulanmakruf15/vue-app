@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    builderDocker = docker.build("bukanebi/vuevue:${CommitHash}")
+                    builderDocker = docker.build("qaulanmakruf15/vue-app:${CommitHash}")
                 }
             }
         }
@@ -73,7 +73,7 @@ pipeline {
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker pull bukanebi/vuevue:master; docker kill vuevue; docker run -d --rm --name vuevue -p 8080:80 bukanebi/vuevue:master',
+                                        execCommand: 'docker pull qaulanmakruf15/vue-app:main; docker kill vue-app; docker run -d --rm --name vue-app -p 8080:80 qaulanmakruf15/vue-app:main',
                                         execTimeout: 120000,
                                     )
                                 ]
