@@ -2,25 +2,21 @@ def builderDocker
 def CommitHash
 
 pipeline {
-    
-    environment {
-        registry = '123160087/vue-app'
-        registryCredential = 'docker-hub'
+
+      parameters {
+        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value fro testing')
+        choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
     }
 
     agent any
 
-    parameters {
-        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value for testing')
-        choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
-    }
-
     stages {
-        stage('Build') { 
+
+        stage('Build Project') {
             steps {
                 nodejs("node12") {
                     sh 'yarn install'
-                } 
+                }
             }
         }
 
@@ -33,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Run Testing') {
             when {
                 expression {
                     params.RUNTEST
@@ -57,9 +53,9 @@ pipeline {
 
             steps {
                 script {
-                    docker.withRegistry( '', registryCredential ) {
+                     docker.withRegistry( '', registryCredential ) {
                         builderDocker.push("${env.GIT_BRANCH}")
-                    }     
+                     }
                 }
             }
         }
@@ -69,23 +65,25 @@ pipeline {
                 expression {
                     params.CICD == 'CICD'
                 }
-            } 
+            }
             steps {
-                sshPublisher(
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: 'Development',
-                            verbose: false,
-                            transfers: [
-                                sshTransfer(
-                                    execCommand: 'docker pull 123160087/vue-app:main; docker kill vue-app; docker run -d --rm --name vue-app -p 8080:80 123160087/vue-app:main',
-                                    execTimeout: 120000,
-                                )
-                            ]
-                        )
-                    ]
-                ) 
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'Development',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: 'docker pull 123160087/vue-app:main; docker kill vue-app; docker run -d --rm --name vue-app -p 8080:80 qaulanmakruf/vue-app:main',
+                                        execTimeout: 120000,
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
             }
         }
     }
-} 
+}
