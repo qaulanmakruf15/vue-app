@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    buildDocker = docker.build("qaulanmakruf15/vue-app:${CommitHash}")
+                    buildDocker = docker.build("123160087/vue-app:${CommitHash}")
                 }
             }
         }
