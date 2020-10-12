@@ -2,7 +2,14 @@ def builderDocker
 def CommitHash
 
 pipeline {
+
+    environment {
+        registry = '123160087/vue-app'
+        registryCredential = 'docker-hub'        
+    }
+
     agent any
+
     parameters {
         booleanParam(name: 'RunTest', defaultValue: true, description: 'Toggle this value for testing')
         choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
@@ -45,7 +52,9 @@ pipeline {
             }
             steps {
                 script {
-                    buildDocker.push("${env.GIT_BRANCH}")
+                    docker.withRegistry( '', registryCredential ) {
+                        buildDocker.push("${env.GIT_BRANCH}")
+                    }
                 }
             }
         }
