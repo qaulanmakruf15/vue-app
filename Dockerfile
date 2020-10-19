@@ -2,11 +2,9 @@
 FROM node:12.4.0-alpine as builder
 
 WORKDIR /app
-
-COPY package.json package-lock.json ./
-COPY . /app
-COPY .env /app/.env
-
+COPY package*.json ./
+RUN npm install
+COPY . .
 RUN yarn \
     && yarn build
 
@@ -15,7 +13,7 @@ RUN yarn \
 FROM nginx:stable-alpine
 LABEL version="1.0"
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY config.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /usr/share/nginx/html
 

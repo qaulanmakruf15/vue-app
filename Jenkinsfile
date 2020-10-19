@@ -2,20 +2,21 @@ def builderDocker
 def CommitHash
 
 pipeline {
-    
+
     agent any
 
     parameters {
-        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value for testing')
-        choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
+        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value from testing')
+        choice(name: 'CICD', choices: ['CI', 'CICD Deployment', 'CICD Production'], description: 'Pick something')
     }
 
     stages {
-        stage('Build') { 
+
+        stage('Build Project') {
             steps {
                 nodejs("node12") {
-                    sh 'yarn install'
-                } 
+                    sh 'npm install'
+                }
             }
         }
 
@@ -23,12 +24,12 @@ pipeline {
             steps {
                 script {
                     CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    builderDocker = docker.build("123160087/vue-app:${CommitHash}")
+                    builderDocker = docker.build("123160087/veu-app:${CommitHash}")
                 }
             }
         }
 
-        stage('Test') {
+        stage('Run Testing') {
             when {
                 expression {
                     params.RUNTEST
@@ -49,36 +50,67 @@ pipeline {
                     params.RUNTEST
                 }
             }
-
             steps {
+                
                 script {
-                        builderDocker.push("${env.GIT_BRANCH}")  
+                    builderDocker.push("${env.GIT_BRANCH}")
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy on devlop') {
             when {
                 expression {
-                    params.CICD == 'CICD'
+                    params.CICD == 'CICD Deployment' || BRANCH_NAME == 'dev'
                 }
-            } 
+            }
             steps {
-                sshPublisher(
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: 'Development',
-                            verbose: false,
-                            transfers: [
-                                sshTransfer(
-                                    execCommand: 'docker pull 123160087/vue-app:main; docker kill 123160087/vue-app:main; docker run -d --rm --name 123160087/vue-app:main -p 8080:80 123160087/vue-app:main',
-                                    execTimeout: 120000,
-                                )
-                            ]
-                        )
-                    ]
-                ) 
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'develop',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        sourceFiles: 'docker-compose.yml',
+                                        remoteDirectory: 'frontend',
+                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        execTimeout: 120000,
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+            }
+        }
+        stage('Deploy on production') {
+            when {
+                expression {
+                    params.CICD == 'CICD Production' || BRANCH_NAME == 'prod'
+                }
+            }
+            steps {
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'production',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        sourceFiles: 'docker-compose.yml',
+                                        remoteDirectory: 'frontend',
+                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        execTimeout: 120000,
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
             }
         }
     }
-} 
+}
