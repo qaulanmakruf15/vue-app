@@ -7,61 +7,14 @@ pipeline {
 
     parameters {
         booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value from testing')
-        choice(name: 'CICD', choices: ['CI', 'CICD Deployment', 'CICD Production'], description: 'Pick something')
+        choice(name: 'Deploy', choices: ['Deploy Deployment', 'Deploy Stagging', 'Deploy Main'], description: 'Pick something')
     }
 
     stages {
-
-        stage('Build Project') {
-            steps {
-                nodejs("node12") {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    builderDocker = docker.build("123160087/veu-app:${CommitHash}")
-                }
-            }
-        }
-
-        stage('Run Testing') {
+        stage('Deploy on Deployment') {
             when {
                 expression {
-                    params.RUNTEST
-                }
-            }
-            steps {
-                script {
-                    builderDocker.inside {
-                        sh 'echo passed'
-                    }
-                }
-            }
-        }
-
-        stage('Push Image') {
-            when {
-                expression {
-                    params.RUNTEST
-                }
-            }
-            steps {
-                
-                script {
-                    builderDocker.push("${env.GIT_BRANCH}")
-                }
-            }
-        }
-
-        stage('Deploy on devlop') {
-            when {
-                expression {
-                    params.CICD == 'CICD Deployment' || BRANCH_NAME == 'dev'
+                    params.CICD == 'Deploy Deployment' || BRANCH_NAME == 'dev'
                 }
             }
             steps {
@@ -69,13 +22,11 @@ pipeline {
                     sshPublisher(
                         publishers: [
                             sshPublisherDesc(
-                                configName: 'develop',
+                                configName: 'ansible',
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        sourceFiles: 'docker-compose.yml',
-                                        remoteDirectory: 'frontend',
-                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-dev.yml',
                                         execTimeout: 120000,
                                     )
                                 ]
@@ -85,10 +36,10 @@ pipeline {
                 }
             }
         }
-        stage('Deploy on production') {
+        stage('Deploy on stagging') {
             when {
                 expression {
-                    params.CICD == 'CICD Production' || BRANCH_NAME == 'prod'
+                    params.CICD == 'Deploy Stagging' || BRANCH_NAME == 'stagging'
                 }
             }
             steps {
@@ -96,13 +47,36 @@ pipeline {
                     sshPublisher(
                         publishers: [
                             sshPublisherDesc(
-                                configName: 'production',
+                                configName: 'ansible',
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        sourceFiles: 'docker-compose.yml',
-                                        remoteDirectory: 'frontend',
-                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-stagging.yml',
+                                        execTimeout: 120000,
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+            }
+        }
+        stage('Deploy on fullstack') {
+            when {
+                expression {
+                    params.CICD == 'Deploy Fullstack' || BRANCH_NAME == 'main'
+                }
+            }
+            steps {
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'ansible',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-main.yml',
                                         execTimeout: 120000,
                                     )
                                 ]
