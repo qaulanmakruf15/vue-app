@@ -74,8 +74,8 @@ pipeline {
                                 transfers: [
                                     sshTransfer(
                                         sourceFiles: 'docker-compose.yml',
-                                        remoteDirectory: 'frontend',
-                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        remoteDirectory: 'vue-app',
+                                        execCommand: 'cd vue-app && docker-compose up -d',
                                         execTimeout: 120000,
                                     )
                                 ]
