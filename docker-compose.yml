@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:  
+    frontend:
+        image: 123160087/vue-app:main
+        container_name: frontend-vue
+        ports:
+            - 8080:8080
+            - 80:80
+        
+networks:
+    default:
+        external:
+            name: backend_deploy
