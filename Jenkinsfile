@@ -7,64 +7,52 @@ pipeline {
 
     parameters {
         booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value from testing')
-        choice(name: 'Deploy', choices: ['Deploy Deployment', 'Deploy Stagging', 'Deploy Main'], description: 'Pick something')
+        choice(name: 'CICD', choices: ['CI', 'CICD Server'], description: 'Pick something')
     }
 
     stages {
-        stage('Deploy on Deployment') {
-            when {
-                expression {
-                    params.CICD == 'Deploy Deployment' || BRANCH_NAME == 'dev'
-                }
-            }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sshPublisher(
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'ansible',
-                                verbose: false,
-                                transfers: [
-                                    sshTransfer(
-                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-dev.yml',
-                                        execTimeout: 120000,
-                                    )
-                                ]
-                            )
-                        ]
-                    )
+                    CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
+                    builderDocker = docker.build("123160087/vue-app:${CommitHash}")
                 }
             }
         }
-        stage('Deploy on stagging') {
+
+        stage('Run Testing') {
             when {
                 expression {
-                    params.CICD == 'Deploy Stagging' || BRANCH_NAME == 'stagging'
+                    params.RUNTEST
                 }
             }
             steps {
                 script {
-                    sshPublisher(
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'ansible',
-                                verbose: false,
-                                transfers: [
-                                    sshTransfer(
-                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-stagging.yml',
-                                        execTimeout: 120000,
-                                    )
-                                ]
-                            )
-                        ]
-                    )
+                    builderDocker.inside {
+                        sh 'echo passed'
+                    }
                 }
             }
         }
-        stage('Deploy on fullstack') {
+
+        stage('Push Image') {
             when {
                 expression {
-                    params.CICD == 'Deploy Fullstack' || BRANCH_NAME == 'main'
+                    params.RUNTEST
+                }
+            }
+            steps {
+                
+                script {
+                    builderDocker.push("${env.GIT_BRANCH}")
+                }
+            }
+        }
+
+        stage('Deploy on server') {
+            when {
+                expression {
+                    params.CICD == 'CICD Server' || BRANCH_NAME == 'main'
                 }
             }
             steps {
@@ -72,11 +60,13 @@ pipeline {
                     sshPublisher(
                         publishers: [
                             sshPublisherDesc(
-                                configName: 'ansible',
+                                configName: 'dev-server',
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'cd ansible && ansible-playbook -i hosts front-main.yml',
+                                        sourceFiles: 'docker-compose.yml',
+                                        remoteDirectory: 'frontend',
+                                        execCommand: 'cd frontend && docker-compose down && docker-compose build --pull && docker-compose up -d',
                                         execTimeout: 120000,
                                     )
                                 ]
