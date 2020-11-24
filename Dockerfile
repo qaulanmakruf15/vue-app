@@ -1,19 +1,19 @@
 ## NODE Config
-FROM node:12.4.0-alpine as builder
+FROM node:12.19.0-alpine as builder
 
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN yarn \
-    && yarn build
+RUN npm run build
+
 
 
 ## NGINX Config
 FROM nginx:stable-alpine
 LABEL version="1.0"
 
-COPY config.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 WORKDIR /usr/share/nginx/html
 
