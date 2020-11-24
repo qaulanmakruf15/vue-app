@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    builderDocker = docker.build("123160087/veu-app:${CommitHash}")
+                    builderDocker = docker.build("123160087/vue-app:${CommitHash}")
                 }
             }
         }
@@ -101,8 +101,8 @@ pipeline {
                                 transfers: [
                                     sshTransfer(
                                         sourceFiles: 'docker-compose.yml',
-                                        remoteDirectory: 'frontend',
-                                        execCommand: 'cd frontend && docker-compose up -d',
+                                        remoteDirectory: 'vue-app',
+                                        execCommand: 'cd vue-app && docker-compose up -d',
                                         execTimeout: 120000,
                                     )
                                 ]
