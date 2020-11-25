@@ -11,4 +11,4 @@ services:
 networks:
     default:
         external:
-            name: vue-app_deploy
+            name: express_deploy
