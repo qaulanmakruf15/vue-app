@@ -50,7 +50,7 @@ pipeline {
             }
         }
 
-        stage('Deploy on devlop') {
+        stage('Deploy on develop') {
             when {
                 expression {
                     params.CICD == 'CICD Deployment' || BRANCH_NAME == 'dev'
@@ -62,33 +62,6 @@ pipeline {
                         publishers: [
                             sshPublisherDesc(
                                 configName: 'develop',
-                                verbose: false,
-                                transfers: [
-                                    sshTransfer(
-                                        sourceFiles: 'docker-compose.yml',
-                                        remoteDirectory: 'vue-app',
-                                        execCommand: 'cd vue-app && docker-compose up -d',
-                                        execTimeout: 120000,
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                }
-            }
-        }
-        stage('Deploy on production') {
-            when {
-                expression {
-                    params.CICD == 'CICD Production' || BRANCH_NAME == 'prod'
-                }
-            }
-            steps {
-                script {
-                    sshPublisher(
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'production',
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
