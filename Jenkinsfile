@@ -53,7 +53,7 @@ pipeline {
         stage('Deploy on develop') {
             when {
                 expression {
-                    params.CICD == 'CICD Deployment' || BRANCH_NAME == 'dev'
+                    params.CICD == 'CICD Deployment' || BRANCH_NAME == 'main'
                 }
             }
             steps {
