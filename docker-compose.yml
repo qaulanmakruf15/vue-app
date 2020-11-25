@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 
 services:  
     frontend:
@@ -11,4 +11,4 @@ services:
 networks:
     default:
         external:
-            name: backend_deploy
+            name: vue-app_deploy
