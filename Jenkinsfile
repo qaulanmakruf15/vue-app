@@ -12,14 +12,6 @@ pipeline {
 
     stages {
 
-        stage('Build Project') {
-            steps {
-                nodejs("node15") {
-                    sh 'yarn install'
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
