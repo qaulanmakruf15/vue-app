@@ -14,7 +14,7 @@ pipeline {
 
         stage('Build Project') {
             steps {
-                nodejs("node12") {
+                nodejs("node15") {
                     sh 'yarn install'
                 }
             }
