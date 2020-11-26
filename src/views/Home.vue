@@ -257,7 +257,7 @@
 
                     <b-col xl="4" lg="6" md="12" v-for="(item, index) in products" :key="index">
                       <b-card
-                        img-src="https://images.unsplash.com/photo-1546619034-1eebcb08bb87?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
+                        img-src="https://images.unsplash.com/photo-1547495706-7485ef02d47d?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTQxfHxkcmlua3xlbnwwfDB8MHw%3D&auto=format&fit=crop&w=750&q=80"
                         img-alt="Image"
                         img-top
                         class="custom-card"
