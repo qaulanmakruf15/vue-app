@@ -1,5 +1,4 @@
 node modules
 .editorconfig
-.env.local
 .prettierrc.js
 dump.rdb
