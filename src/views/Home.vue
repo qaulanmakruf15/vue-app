@@ -286,7 +286,7 @@
                   <b-col xl="12" v-if="cart.length > 0">
                     <div class="mt-3 mr-3" v-for="(item, index) in cart" :key="index">
                       <b-card
-                        img-src="https://images.unsplash.com/photo-1543392883-914cfa6f9ed4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
+                        img-src="https://images.unsplash.com/photo-1547495706-7485ef02d47d?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTQxfHxkcmlua3xlbnwwfDB8MHw%3D&auto=format&fit=crop&w=750&q=80"
                         img-alt="Card image"
                         img-left
                         class="custom-card-cart custom-padding-cart-body"

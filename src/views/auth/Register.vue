@@ -36,7 +36,7 @@
                 Atleast 8 character.
               </small>
               <br />
-              <b-button block variant="success" type="submit">
+              <b-button block variant="primary" type="submit">
                 <b>Submit</b>
               </b-button>
               <b-button block variant="danger" type="reset">

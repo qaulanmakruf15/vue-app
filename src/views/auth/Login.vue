@@ -129,7 +129,7 @@ export default {
   margin: 0 auto 100px;
   padding: 45px;
   text-align: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  box-shadow: 0 0 100px 0 rgba(20, 0, 0, 0.5), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 .form input {
   font-family: "Roboto", sans-serif;
@@ -147,7 +147,7 @@ export default {
   font-family: "Roboto", sans-serif;
   text-transform: uppercase;
   outline: 0;
-  background: #00BFFF;
+  background:#76b852;
   width: 100%;
   border: 0;
   padding: 15px;
@@ -166,7 +166,7 @@ export default {
   font-size: 13px;
 }
 .form .message a {
-  color: #e5be93;
+  color: #76b852;
   text-decoration: none;
 }
 .form .register-form {
@@ -214,7 +214,7 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: url("https://images.unsplash.com/photo-1541929347448-1a5788e6178a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1580&q=1280") ;
+  background: url("https://images.unsplash.com/photo-1547495706-7485ef02d47d?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTQxfHxkcmlua3xlbnwwfDB8MHw%3D&auto=format&fit=crop&w=1500&q=40") ;
   height:100%;
 }
 </style>
